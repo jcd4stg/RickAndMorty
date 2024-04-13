@@ -22,15 +22,11 @@ final class RMFooterLoadingCollectionReusableView: UICollectionReusableView {
         
         backgroundColor = .systemBackground
         addSubviews(spinner)
+        addConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("Unsupported")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        addConstraints()
     }
     
     private func addConstraints() {

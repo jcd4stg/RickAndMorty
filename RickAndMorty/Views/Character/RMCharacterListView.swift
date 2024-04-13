@@ -42,7 +42,7 @@ final class RMCharacterListView: UIView {
                                 withReuseIdentifier: RMFooterLoadingCollectionReusableView.identifier)
         
         collectionView.alwaysBounceVertical = false
-        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = true
         return collectionView
     }()
     
@@ -53,6 +53,7 @@ final class RMCharacterListView: UIView {
         
         translatesAutoresizingMaskIntoConstraints = false
         addSubviews(collectionView, spinner)
+        addConstraints()
         
         spinner.startAnimating()
         
@@ -68,11 +69,6 @@ final class RMCharacterListView: UIView {
     private func setupCollectionView() {
         collectionView.dataSource = viewModel
         collectionView.delegate = viewModel
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        addConstraints()
     }
     
     private func addConstraints() {
