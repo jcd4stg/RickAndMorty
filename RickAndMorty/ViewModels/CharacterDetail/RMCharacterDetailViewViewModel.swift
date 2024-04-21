@@ -13,6 +13,7 @@ final class RMCharacterDetailViewViewModel {
     public var episodes: [String] {
         character.episode
     }
+    
     enum SectionType {
         case photo(viewModel: RMCharacterPhotoCollectionViewCellViewModel)
         
@@ -30,21 +31,6 @@ final class RMCharacterDetailViewViewModel {
     }
     
     private func setupSections() {
-        
-        /*
-         let id: Int
-         let name: String
-         let status: RMCharacterStatus
-         let species: String
-         let type: String
-         let gender: RMCharacterGender
-         let origin: RMOrigin
-         let location: RMSingleLocation
-         let image: String
-         let episode: [String]
-         let url: String
-         let created: String
-         */
         
         sections = [
             .photo(viewModel: .init(imageUrl: URL(string: character.image))),

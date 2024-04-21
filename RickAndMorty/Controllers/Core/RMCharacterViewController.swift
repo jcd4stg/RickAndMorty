@@ -9,7 +9,7 @@ import UIKit
 
 /// Controller to show and search for Characters
 final class RMCharacterViewController: UIViewController {
-
+    
     private let characterListView = RMCharacterListView()
     
     override func viewDidLoad() {
@@ -17,17 +17,20 @@ final class RMCharacterViewController: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Characters"
         setupView()
-    }
-    
-    private func setupView() {
-        characterListView.delegate = self
-        view.addSubview(characterListView)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
         addConstraints()
+        addSearchButton()
+    }
+    
+    private func addSearchButton() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search,
+                                                            target: self,
+                                                            action: #selector(didTapSearch))
+    }
+    
+    @objc private func didTapSearch() {
+        let vc = RMSearchViewController(config: RMSearchViewController.Config(type: .character))
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func addConstraints() {
@@ -38,6 +41,11 @@ final class RMCharacterViewController: UIViewController {
             characterListView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
 
         ])
+    }
+    
+    private func setupView() {
+        characterListView.delegate = self
+        view.addSubview(characterListView)
     }
 }
 
