@@ -12,7 +12,7 @@ import Foundation
 // - kick off API requests
 
 final class RMSearchViewViewModel {
-    private let config: RMSearchViewController.Config
+    let config: RMSearchViewController.Config
     
     init(config: RMSearchViewController.Config) {
         self.config = config
