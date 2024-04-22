@@ -21,6 +21,17 @@ class RMSearchViewController: UIViewController {
             case episode // allow name
             case location // name | type
             
+            var endpoint: RMEndpoint {
+                switch self {
+                case .character:
+                    return .character
+                case .location:
+                    return .location
+                case .episode:
+                    return .episode
+                }
+            }
+            
             var title: String {
                 switch self {
                 case .character:
@@ -57,6 +68,7 @@ class RMSearchViewController: UIViewController {
         title = viewModel.config.type.title
         view.backgroundColor = .systemBackground
         view.addSubview(searchView)
+        searchView.delegate = self
         addConstraints()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Search",
@@ -65,8 +77,13 @@ class RMSearchViewController: UIViewController {
                                                             action: #selector(didTapExecuteSearch))
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        searchView.presentKeyboard()
+    }
+    
     @objc private func didTapExecuteSearch() {
-        //viewModel.executeSearch()
+        viewModel.executeSearch()
     }
    
     private func addConstraints() {
@@ -77,5 +94,19 @@ class RMSearchViewController: UIViewController {
             searchView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 
         ])
+    }
+}
+
+// MARK: - RMSearchViewDelegate
+extension RMSearchViewController: RMSearchViewDelegate {
+    func rmSearchView(_ searchView: RMSearchView, didSelectOption option: RMSearchInputViewViewModel.DynamicOption) {
+        let vc = RMSearchOptionPickerViewController(option: option) { [weak self] selection in
+            DispatchQueue.main.async {
+                self?.viewModel.set(value: selection, for: option)
+            }
+        }
+        vc.sheetPresentationController?.detents = [.medium()]
+        vc.sheetPresentationController?.prefersGrabberVisible = true
+        present(vc, animated: true)
     }
 }
