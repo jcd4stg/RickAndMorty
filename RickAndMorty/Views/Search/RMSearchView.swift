@@ -11,6 +11,7 @@ protocol RMSearchViewDelegate: AnyObject {
     func rmSearchView(_ searchView: RMSearchView,
                       didSelectOption option: RMSearchInputViewViewModel.DynamicOption)
 }
+
 final class RMSearchView: UIView {
 
     weak var delegate: RMSearchViewDelegate?
@@ -45,6 +46,10 @@ final class RMSearchView: UIView {
             // tuple: Option | New Value
             self?.searchInputView.update(option: tuple.0, value: tuple.1)
         }
+        
+        viewModel.registerSearchResultsHandler { results in
+            print(results)
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -75,6 +80,14 @@ final class RMSearchView: UIView {
 
 // MARK: - RMSearchInputViewDelegate
 extension RMSearchView: RMSearchInputViewDelegate {
+    func rmSearchInputViewDidTapSearchKeyboardButton(_ inputView: RMSearchInputView) {
+        viewModel.executeSearch()
+    }
+    
+    func rmSearchInputView(_ inputView: RMSearchInputView, didChangeSearchText text: String) {
+        viewModel.set(quety: text)
+    }
+    
     func rmSearchInputView(
         _ inputView: RMSearchInputView,
         didSelectOption option: RMSearchInputViewViewModel.DynamicOption
