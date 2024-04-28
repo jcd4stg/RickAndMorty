@@ -23,6 +23,8 @@ final class RMSearchViewViewModel {
     
     private var searchResultHandler: ((RMSearchResultViewModel) -> Void)?
     
+    private var noResultHandler: (() -> Void)?
+
     init(config: RMSearchViewController.Config) {
         self.config = config
     }
@@ -48,6 +50,9 @@ final class RMSearchViewViewModel {
         searchResultHandler = block
     }
     
+    public func registerNoResultsHandler(_ block: @escaping () -> Void) {
+        noResultHandler = block
+    }
     public func executeSearch() {
         // Create request based on filters
         //https://rickandmortyapi.com/api/character/?name=rick&status=alive
@@ -89,8 +94,9 @@ final class RMSearchViewViewModel {
             case .success(let model):
                 // episodes, characters: CollectionView, location: TableView
                 self?.processSearchResults(model: model)
+                
             case .failure:
-                print("Failed to get results")
+                self?.handleNoResults()
                 break
             }
         }
@@ -122,7 +128,13 @@ final class RMSearchViewViewModel {
         if let resultsVM = resultsVM {
             searchResultHandler?(resultsVM)
         } else {
-            
+            // callback error
+            handleNoResults()
         }
+    }
+    
+    private func handleNoResults() {
+        print("No Results")
+        noResultHandler?()
     }
 }
