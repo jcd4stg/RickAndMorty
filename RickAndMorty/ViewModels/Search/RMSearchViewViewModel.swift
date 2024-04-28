@@ -25,6 +25,8 @@ final class RMSearchViewViewModel {
     
     private var noResultHandler: (() -> Void)?
 
+    private var searchResultModel: Codable?
+    
     init(config: RMSearchViewController.Config) {
         self.config = config
     }
@@ -126,11 +128,20 @@ final class RMSearchViewViewModel {
         }
         
         if let resultsVM = resultsVM {
+            searchResultModel = model
             searchResultHandler?(resultsVM)
         } else {
             // callback error
             handleNoResults()
         }
+    }
+    
+    public func locationSearchResult(at index: Int) -> RMLocation? {
+        guard let searchModel = searchResultModel as? RMGetLocationsResponse else {
+            return nil
+        }
+        
+        return searchModel.results[index]
     }
     
     private func handleNoResults() {
