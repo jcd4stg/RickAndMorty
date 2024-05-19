@@ -29,6 +29,8 @@ final class RMSearchInputView: UIView {
         return searchBar
     }()
     
+    private var stackView: UIStackView?
+
     private var viewModel: RMSearchInputViewViewModel?{
         didSet {
             guard let viewModel = viewModel, viewModel.hasDynamicOptions else {
@@ -39,8 +41,6 @@ final class RMSearchInputView: UIView {
             createOptionSelecitonViews(options: options)
         }
     }
-    
-    private var stackView: UIStackView?
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -147,7 +147,7 @@ final class RMSearchInputView: UIView {
               let allOptions = viewModel?.options,
                 let index = allOptions.firstIndex(of: option) else {
             return
-        }
+        }   
         
         let button: UIButton = buttons[index]
         

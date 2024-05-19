@@ -82,7 +82,8 @@ class RMSearchViewController: UIViewController {
         searchView.presentKeyboard()
     }
     
-    @objc private func didTapExecuteSearch() {
+    @objc 
+    private func didTapExecuteSearch() {
         viewModel.executeSearch()
     }
    
@@ -99,11 +100,6 @@ class RMSearchViewController: UIViewController {
 
 // MARK: - RMSearchViewDelegate
 extension RMSearchViewController: RMSearchViewDelegate {
-    func rmSearchView(_ searchView: RMSearchView, didSelectLocation location: RMLocation) {
-        let vc = RMLocationDetailViewController(location: location)
-        vc.navigationItem.largeTitleDisplayMode = .never
-        navigationController?.pushViewController(vc, animated: true)
-    }
     
     func rmSearchView(_ searchView: RMSearchView, didSelectOption option: RMSearchInputViewViewModel.DynamicOption) {
         let vc = RMSearchOptionPickerViewController(option: option) { [weak self] selection in
@@ -114,5 +110,11 @@ extension RMSearchViewController: RMSearchViewDelegate {
         vc.sheetPresentationController?.detents = [.medium()]
         vc.sheetPresentationController?.prefersGrabberVisible = true
         present(vc, animated: true)
+    }
+    
+    func rmSearchView(_ searchView: RMSearchView, didSelectLocation location: RMLocation) {
+        let vc = RMLocationDetailViewController(location: location)
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

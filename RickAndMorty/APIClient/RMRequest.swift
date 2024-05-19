@@ -88,7 +88,7 @@ final class RMRequest {
         }
         
         let trimmed = string.replacingOccurrences(of: Constants.baseUrl + "/", with: "")
-        
+        // character/1
         if trimmed.contains("/") {
             let components = trimmed.components(separatedBy: "/")
             if !components.isEmpty {
@@ -105,9 +105,10 @@ final class RMRequest {
                     return
                 }
             }
+            // character?name=rick&status=alive
         } else if trimmed.contains("?") {
             let components = trimmed.components(separatedBy: "?")
-            if !components.isEmpty, components.count >= 2 {
+            if !components.isEmpty && components.count >= 2 {
                 let endpointString = components[0]
                 let queryItemsString = components[1]
                 // value=name&value=name

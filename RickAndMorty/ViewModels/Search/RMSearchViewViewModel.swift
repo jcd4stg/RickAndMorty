@@ -27,6 +27,7 @@ final class RMSearchViewViewModel {
 
     private var searchResultModel: Codable?
     
+    // MARK: - Init
     init(config: RMSearchViewController.Config) {
         self.config = config
     }
@@ -55,13 +56,21 @@ final class RMSearchViewViewModel {
     public func registerNoResultsHandler(_ block: @escaping () -> Void) {
         noResultHandler = block
     }
+    
     public func executeSearch() {
         // Create request based on filters
         //https://rickandmortyapi.com/api/character/?name=rick&status=alive
                     
+        guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else {
+            return
+        }
+        
         // Build arguments
         var queryParams: [URLQueryItem] = [
-            URLQueryItem(name: "name", value: searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))
+            URLQueryItem(
+                name: "name",
+                value: searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+            )
         ]
         
         // Add options
@@ -96,7 +105,6 @@ final class RMSearchViewViewModel {
             case .success(let model):
                 // episodes, characters: CollectionView, location: TableView
                 self?.processSearchResults(model: model)
-                
             case .failure:
                 self?.handleNoResults()
                 break
@@ -105,31 +113,37 @@ final class RMSearchViewViewModel {
     }
     
     private func processSearchResults(model: Codable) {
-        var resultsVM: RMSearchResultViewModel?
+        var resultsVM: RMSearchResultType?
+        var nextUrl: String?
         if let characterResults = model as? RMGetAllCharactersResponse {
-            resultsVM = RMSearchResultViewModel.characters(characterResults.results.compactMap({
+            resultsVM = RMSearchResultType.characters(characterResults.results.compactMap({
                 return RMCharacterCollectionViewCellViewModel(
                     characterName: $0.name,
                     characterStatus: $0.status,
                     characterImageUrl: URL(string: $0.image)
                 )
             }))
+            nextUrl = characterResults.info.next
         }
         
         else if let episodesResults = model as? RMGetAllEpisodesResponse {
-            resultsVM = RMSearchResultViewModel.episodes(episodesResults.results.compactMap({
+            resultsVM = RMSearchResultType.episodes(episodesResults.results.compactMap({
                 return RMCharacterEpisodeCollectionViewCellViewModel(episodeDataUrl: URL(string: $0.url))
             }))
+            nextUrl = episodesResults.info.next
         }
         else if let locationResults = model as? RMGetLocationsResponse {
-            resultsVM = RMSearchResultViewModel.locations(locationResults.results.compactMap({
+            resultsVM = RMSearchResultType.locations(locationResults.results.compactMap({
                 return RMLocationTableViewCellViewModel(location: $0)
             }))
+            nextUrl = locationResults.info.next
+
         }
         
-        if let resultsVM = resultsVM {
+        if let results = resultsVM {
             searchResultModel = model
-            searchResultHandler?(resultsVM)
+            let vm = RMSearchResultViewModel(results: results, next: nextUrl)
+            searchResultHandler?(vm)
         } else {
             // callback error
             handleNoResults()

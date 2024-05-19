@@ -34,7 +34,6 @@ final class RMSearchOptionPickerViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .systemBackground
         setUpTable()
     }

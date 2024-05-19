@@ -151,6 +151,7 @@ extension RMLocationView: UIScrollViewDelegate {
                     self?.showLoadingIndicator()
                 }
                 viewModel.fetchAdditionalLocations()
+                
             }
             timer.invalidate()
         }
