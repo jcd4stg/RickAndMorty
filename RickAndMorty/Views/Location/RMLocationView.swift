@@ -7,6 +7,8 @@
 
 import UIKit
 
+
+/// Interface to relay location view events
 protocol RMLocationViewDelegate: AnyObject {
     func rmLocationView(_ locationView: RMLocationView, didSelect location: RMLocation)
 }
@@ -99,6 +101,7 @@ final class RMLocationView: UIView {
     }
 }
 
+// MARK: - UITableView
 extension RMLocationView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -131,6 +134,7 @@ extension RMLocationView: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - UIScrollViewDelegate
 extension RMLocationView: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
@@ -151,7 +155,7 @@ extension RMLocationView: UIScrollViewDelegate {
                     self?.showLoadingIndicator()
                 }
                 viewModel.fetchAdditionalLocations()
-                
+
             }
             timer.invalidate()
         }
@@ -160,5 +164,6 @@ extension RMLocationView: UIScrollViewDelegate {
     private func showLoadingIndicator() {
         let footer = RMTableLoadingFooterView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 100))
         tableView.tableFooterView = footer
+        
     }
 }

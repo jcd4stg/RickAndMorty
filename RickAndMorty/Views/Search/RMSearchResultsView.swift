@@ -9,6 +9,9 @@ import UIKit
 
 protocol RMSearchResultsViewDelegate: AnyObject {
     func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapLocationAt index: Int)
+    func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapCharacterAt index: Int)
+    func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapEpisodeAt index: Int)
+
 }
 
 /// show search results UI (table or collection as needed)
@@ -34,7 +37,7 @@ final class RMSearchResultsView: UIView {
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isHidden = true
@@ -200,19 +203,33 @@ extension RMSearchResultsView: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        // handle cell tap
+        // TODO: handle cell tap
+        guard let viewModel = viewModel else {
+            return
+        }
+        
+        switch viewModel.results {
+        case .characters:
+            delegate?.rmSearchResultsView(self, didTapCharacterAt: indexPath.row)
+        case .episodes:
+            delegate?.rmSearchResultsView(self, didTapEpisodeAt: indexPath.row)
+        case .locations:
+            break
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let currentViewModel = collectionViewCellViewModels[indexPath.row]
+        let bounds = collectionView.bounds
 
         if currentViewModel is RMCharacterCollectionViewCellViewModel {
             // character Size
-            let width = ((collectionView.bounds.width - 30) / 2)
+            let width = UIDevice.isIphone ? ((bounds.width - 30) / 2) : ((bounds.width - 50) / 4)
             return CGSize(width: width, height: width * 1.5)
         }
         // Episode size
-        let width = collectionView.bounds.width - 20
+        let width = UIDevice.isIphone ? bounds.width - 20 : ((bounds.width - 50) / 4)
         
         return CGSize(width: width, height: 100)
     }
@@ -270,13 +287,25 @@ extension RMSearchResultsView: UIScrollViewDelegate {
             if offset >= (totalContentlHeight - totalScrollViewFixedHeight - 120) {
                 
                 viewModel.fetchAdditionalResults { [weak self] newResults in
-                    // Refresh table
-                    self?.tableView.tableFooterView = nil
-                    self?.collectionViewCellViewModels = newResults
+                    guard let strongSelf = self else {
+                        return
+                    }
                     
-                    print("Should add more result cells for search results: \(newResults.count)")
+                    DispatchQueue.main.async {
+                        strongSelf.tableView.tableFooterView = nil
+                        
+                        let originalCount = strongSelf.collectionViewCellViewModels.count
+                        let newCount = newResults.count - originalCount
+                        let total = originalCount + newCount
+                        let startingIndex = total - newCount
+                        let indexPathsToAdd: [IndexPath] = Array(startingIndex..<(startingIndex + newCount)).compactMap {
+                            return IndexPath(row: $0, section: 0)
+                        }
+                        
+                        strongSelf.collectionViewCellViewModels = newResults
+                        strongSelf.collectionView.insertItems(at: indexPathsToAdd)
+                    }
                 }
-                
             }
             timer.invalidate()
         }

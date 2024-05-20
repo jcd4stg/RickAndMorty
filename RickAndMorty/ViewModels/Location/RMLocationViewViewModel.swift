@@ -115,7 +115,7 @@ final class RMLocationViewViewModel {
                 DispatchQueue.main.async {
                     self?.delegate?.didFetchInitialLocation()
                 }
-            case .failure(let failure):
+            case .failure:
                 // TODO: Handle error
                 break
             }

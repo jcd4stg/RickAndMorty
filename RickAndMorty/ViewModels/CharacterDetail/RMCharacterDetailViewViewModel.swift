@@ -87,7 +87,7 @@ final class RMCharacterDetailViewViewModel {
     public func createInfoSectionLayout() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.5),
+                widthDimension: .fractionalWidth(UIDevice.isIphone ? 0.5 : 0.25),
                 heightDimension: .fractionalHeight(1.0)
             )
         )
@@ -102,7 +102,7 @@ final class RMCharacterDetailViewViewModel {
                 heightDimension: .absolute(150)
             ),
             repeatingSubitem: item,
-            count: 2
+            count: UIDevice.isIphone ? 2 : 4
         )
         
         let section = NSCollectionLayoutSection(group: group)
@@ -124,7 +124,7 @@ final class RMCharacterDetailViewViewModel {
         
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.8),
+                widthDimension: .fractionalWidth(UIDevice.isIphone ? 0.8 : 0.4),
                 heightDimension: .absolute(150)
             ),
             subitems: [item]
